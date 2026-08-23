@@ -1,2 +1,8 @@
 node_modules
 .next
+package-lock.json
+/src/generated/prisma
+/generated/prisma
+.claude
+.agents
+.windsurf

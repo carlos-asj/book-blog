@@ -1,0 +1,16 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Resenha {
+  id        Int      @id @default(autoincrement())
+  bookTitle String   @unique
+  rating    Float
+  review    String?
+  photo     String?
+  createdAt DateTime @default(now())
+}
