@@ -68,7 +68,7 @@ export default function PaginaAdmin() {
         />
 
         <input
-          type="number"
+          type="float"
           placeholder="Nota do livro"
           value={rating}
           onChange={(e) => setRating(e.target.value)}
