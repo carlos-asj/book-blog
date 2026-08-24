@@ -4,6 +4,11 @@ import { prisma } from "../../../lib/prisma";
 export async function POST(request) {
     try {
         const body = await request.json();
+
+        if (body.adminKey !== process.env.ADMIN_SECRET_KEY) {
+            return Response.json({ error: "Acesso negado: Chave inválida." }, { status: 401 });
+        }
+  
         const { bookTitle, rating, review, photo } = body;
         console.log(body)
 

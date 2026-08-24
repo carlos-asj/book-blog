@@ -1,3 +1,7 @@
 export default function Page() {
-    return <h1>Main page</h1>
+    return <html lang="pt-br">
+        <body>
+            <h1>Main Page</h1>
+        </body>
+    </html>
 }
