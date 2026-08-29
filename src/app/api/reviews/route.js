@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
+import { getReviews, postReview } from "../../../lib/reviews";
 
 export async function POST(request) {
     try {
@@ -14,20 +15,14 @@ export async function POST(request) {
         const numericRating = parseFloat(rating);
 
         if (isNaN(numericRating)) {
-        return Response.json({ error: "A nota informada precisa ser um número válido." }, { status: 400 });
+            return Response.json({ error: "A nota informada precisa ser um número válido." }, { status: 400 });
         }
         
         const cleanTitle = String(bookTitle).normalize('NFC').trim();
         const cleanReview = review ? String(review).normalize('NFC').trim() : null;
+        const StrPhoto = photo ? String(photo).trim(): null;
 
-        const newReview = await prisma.resenha.create({
-            data: {
-                bookTitle: cleanTitle,
-                rating: numericRating,
-                review: cleanReview,
-                photo: photo ? String(photo).trim(): null
-            }
-        });
+        const newReview = await postReview(cleanTitle, numericRating, cleanReview, StrPhoto);
 
         return NextResponse.json(newReview, { status: 201 });
     } catch (error) {
@@ -40,13 +35,8 @@ export async function POST(request) {
 
 export async function GET() {
     try {
-        const reviews = await prisma.resenha.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
-
-        return NextResponse.json(reviews, { status: 200 });
+        const reviews = await getReviews();
+        return Response.json(reviews, { status: 200 });
     } catch (error) {
         console.error('Erro ao buscar resenhas:', error);
         return NextResponse.json({ error: "Internal Server Error"},

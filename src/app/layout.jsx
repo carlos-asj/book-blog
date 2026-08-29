@@ -11,7 +11,7 @@ export default function RootLayout({ children }) {
         <head>
             <meta charSet="utf-8" />
         </head>
-      <body>{children}</body>
+      <body className='bg-[#16162B] text-white'>{children}</body>
     </html>
   );
 }
