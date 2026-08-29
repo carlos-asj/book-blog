@@ -14,6 +14,9 @@ export default function PaginaAdmin() {
 
   const [editingId, setEditingId] = useState(null);
 
+  const [photoFile, setPhotoFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+
   async function fetchReviews() {
     try {
       const res = await fetch('api/reviews');
@@ -86,10 +89,33 @@ export default function PaginaAdmin() {
       return;
     }
 
+    let photoUrl = photo;
+
+    if (photoFile) {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', photoFile);
+
+    const uploadRes = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    setUploading(false);
+
+    if (!uploadRes.ok) {
+      alert('Erro ao enviar a imagem.');
+      return;
+    }
+
+    const uploadData = await uploadRes.json();
+    photoUrl = uploadData.url;
+  }
+
     const dadosResenha = {
       bookTitle,
       rating,
-      photo,
+      photo: photoUrl,
       review,
       adminKey: chaveSalva,
     };
@@ -135,13 +161,19 @@ export default function PaginaAdmin() {
           className="border p-2 rounded"
         />
 
-        <input
-          type="text"
-          placeholder="Caminho da foto"
-          value={photo || ''}
-          onChange={(e) => setPhoto(e.target.value)}
-          className="border p-2 rounded"
-        />
+        <div>
+          <label>Foto da Capa</label>
+          <input
+            type="file"
+            accept="image/*"
+            value={photo || ''}
+            onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
+            className="border p-2 rounded"
+          />
+          {photo && !photoFile && (
+            <img src={photo} alt="Foto atual" className="w-32 h-32 object-cover rounded mt-1" />
+          )}
+        </div>
 
         <textarea
           placeholder="Escreva sua resenha em Markdown..."
@@ -162,9 +194,9 @@ export default function PaginaAdmin() {
         </div>
 
         <button
-          type="submit"
+          type="submit" disabled={uploading}
           className={`py-2 rounded text-white font-semibold transition-colors ${
-            editingId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
+            uploading ? 'Enviando imagem...' : editingId ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
           }`}
         >
           {editingId ? 'Atualizar Resenha' : 'Salvar Resenha'}
